@@ -1,0 +1,21 @@
+{
+    "name":"reflekt",
+    "description":"From tracking errors to eliminating them-reflekt on mistakes and correct them",
+    "version":"1.0",
+    "manifest_version":3,
+    "action":{
+        "default_popup":"popup.html",
+        "default_icon":"popup_icon.png"
+    },
+    "host_permissions":["https://leetcode.com/*"],
+    "content_scripts":[
+        {
+            "matches":["https://leetcode.com/problems/*"],
+            "js":["content/content.js"],
+            "run_at":"document_idle"
+        }
+    ],
+    "background":{
+        "service_worker":"background/background.js"
+    }
+}
