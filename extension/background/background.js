@@ -1,42 +1,41 @@
 function monacoBridgeMainWorld() {
+  if (window.__MONACO_BRIDGE_INSTALLED__) return;
+  window.__MONACO_BRIDGE_INSTALLED__ = true;
+
   console.log("[PAGE] Monaco bridge injected");
 
-  function sendCode() {
+  function sendCode(action = "UNKNOWN") {
     const monaco = window.monaco;
     if (!monaco?.editor) return;
 
     const models = monaco.editor.getModels();
-    if (!models || !models.length) return;
+    if (!models?.length) return;
 
-    window.postMessage({
-      __FROM_MONACO_BRIDGE__: true,
-      type: "MONACO_CODE",
-      code: models[0].getValue()
-    }, "*");
+    window.postMessage(
+      {
+        __FROM_MONACO_BRIDGE__: true,
+        type: "MONACO_CODE",
+        action,
+        code: models[0].getValue()
+      },
+      "*"
+    );
   }
 
-  const wait = setInterval(() => {
-    if (window.monaco?.editor?.getModels()?.length) {
-      clearInterval(wait);
-      sendCode();
-
-    // 🔥 push updates on every change
-    const model = monaco.editor.getModels()[0];
-
-    model.onDidChangeContent(() => {
-    sendCode();
-    });
-
-    }
-  }, 300);
+  document.addEventListener("REQUEST_CODE", (e) => {
+    sendCode(e.detail?.action);
+  });
 }
+
 
 chrome.runtime.onMessage.addListener((msg, sender) => {
   if (msg.type === "INJECT_MONACO_BRIDGE") {
     chrome.scripting.executeScript({
       target: { tabId: sender.tab.id },
-      world: "MAIN",   // 🚨 THIS BYPASSES CSP
+      world: "MAIN",   // THIS BYPASSES CSP
       func: monacoBridgeMainWorld
     });
   }
 });
+
+
