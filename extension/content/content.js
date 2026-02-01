@@ -83,6 +83,39 @@ function waitForCodeWithRetry(action, {
   });
 }
 
+function getDiff(retries=10,delay=300){
+  return new Promise((resolve,reject)=>{
+    function find(){
+      const container = document.querySelector('.flex.items-start.justify-between.gap-4+.flex.gap-1');
+      if(!container){
+        if(retries-- >0) return setTimeout(find,delay);
+        else return reject("Not found container");
+      }
+      const allowed = ['easy', 'medium', 'hard'];
+      // console.log(
+      //   [...container.children].map(el => el.textContent)
+      // );
+
+      const difficultyEl = [...container.children].find(el =>
+        allowed.includes(el.textContent.trim().toLowerCase())
+      );
+      if(!difficultyEl){
+        if(retries-- >0) return setTimeout(find,delay);
+        else return reject("no child");
+      }
+      return resolve(difficultyEl.innerText.trim());
+    }
+    find();
+
+  })
+  
+}
+
+async function getTopic(){
+  const parent1=document.querySelector(".overflow-hidden.transition-all>.mt-2.flex.flex-wrap.gap-1.pl-7");
+  let child=parent1.children;
+  return [...child].map(el => el.innerText.trim());
+}
 
 async function getErrorMsg(retries = 5) {
   for (let i = 0; i <= retries; i++) {
@@ -93,6 +126,12 @@ async function getErrorMsg(retries = 5) {
     await sleep(100);
   }
   return null;
+}
+
+function getQuestion(){
+  let node=document.querySelector(".flex.items-start.gap-2 .text-title-large.font-semibold.text-text-primary .no-underline.cursor-text");
+  let question=node.innerText;
+  return question;
 }
 
 function observeSubmissionResult() {
@@ -128,11 +167,23 @@ function observeSubmissionResult() {
       if (!errorMsg) return;
     }
 
+    let difficulty=null;
+    getDiff().then(res=>difficulty=res).catch(error=>difficulty=error);
+
+    let topics=null;
+    topics=await getTopic();
+
+    let qid=null;
+    qid=getQuestion();
+
     lastResult = resultText;
 
     const payload = {
       result: resultText,
       errorMsg,
+      difficulty:difficulty,
+      topics:[...topics],
+      question:qid,
       code: latestCode,
       lang: getLanguageFromEditor(),
       timestamp: Date.now()
