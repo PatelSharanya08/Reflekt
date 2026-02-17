@@ -183,7 +183,9 @@ function observeSubmissionResult() {
       errorMsg,
       difficulty:difficulty,
       topics:[...topics],
-      question:qid,
+      questionId:qid,
+      platform:"LeetCode",
+      status: mapResultToStatus(resultText),
       code: latestCode,
       lang: getLanguageFromEditor(),
       timestamp: Date.now()
@@ -191,6 +193,10 @@ function observeSubmissionResult() {
 
     console.log("📦 Captured payload:", payload);
 
+    chrome.runtime.sendMessage({
+      type: "SAVE_RUN_EVENT",
+      payload:payload
+    })
     // 🔒 emit only once
     payloadEmitted = true;
   });
@@ -202,15 +208,27 @@ function observeSubmissionResult() {
   });
 }
 
-function getLanguageFromEditor() {
-  const editorNode = document.querySelector("[data-mode-id]");
-  const btn = document.querySelector('button[aria-haspopup="dialog"]');
-  return (
-    editorNode?.getAttribute("data-mode-id") ||
-    btn?.innerText.trim() ||
-    "unknown"
-  );
+
+function mapResultToStatus(resultText) {
+  if (!resultText) return "UNKNOWN";
+
+  if (resultText.includes("Accepted")) return "AC";
+  if (resultText.includes("Time Limit")) return "TLE";
+  if (resultText.includes("Runtime")) return "RE";
+  if (resultText.includes("Compile")) return "CE";
+  if (resultText.includes("Wrong")) return "WA";
+
+  return "UNKNOWN";
 }
+
+function getLanguageFromEditor() {
+  const btn = document.querySelector(
+    '#editor > div button[aria-haspopup="dialog"]'
+  );
+  return btn?.innerText.trim() || "unknown";
+}
+
+
 
 function attachSubmitListener(){
   let submitBtn=document.querySelector('[data-e2e-locator="console-submit-button"]');
