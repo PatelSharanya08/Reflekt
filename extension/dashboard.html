@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>reflekt :: dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+
+<div id="boot">
+  <div class="boot-line" id="bl0"></div>
+  <div class="boot-line" id="bl1"></div>
+  <div class="boot-line" id="bl2"></div>
+  <div class="boot-line" id="bl3"></div>
+  <div class="boot-line" id="bl4"></div>
+</div>
+
+<header id="header">
+  <div class="logo">
+    <div class="logo-bracket">[</div>
+    <div class="logo-text">re<span>flekt</span></div>
+    <div class="logo-bracket">]</div>
+  </div>
+  <div class="header-right">
+    <div class="status-line">
+      <div class="pulse"></div>
+      <span>leetcode.com active</span>
+    </div>
+    <span id="clock"></span>
+  </div>
+</header>
+
+<main id="app">
+
+  <section class="fade-up" style="transition-delay:0.05s">
+    <div class="sec-hdr">overview</div>
+    <div class="stat-row">
+      <div class="stat-card c-green"><div class="top-line"></div><div class="stat-label">Total Runs</div><div class="stat-val c-green" id="sv-total">0</div><div class="stat-sub">all-time attempts</div></div>
+      <div class="stat-card c-green"><div class="top-line"></div><div class="stat-label">Accepted</div><div class="stat-val c-green" id="sv-ac">0</div><div class="stat-sub">successful passes</div></div>
+      <div class="stat-card c-red"><div class="top-line"></div><div class="stat-label">Total Errors</div><div class="stat-val c-red" id="sv-err">0</div><div class="stat-sub">TLE · RE · CE · WA</div></div>
+      <div class="stat-card c-cyan"><div class="top-line"></div><div class="stat-label">Unique Problems</div><div class="stat-val c-cyan" id="sv-uniq">0</div><div class="stat-sub">questions attempted</div></div>
+      <div class="stat-card c-amber"><div class="top-line"></div><div class="stat-label">This Week</div><div class="stat-val c-amber" id="sv-week">0</div><div class="stat-sub">runs last 7 days</div></div>
+    </div>
+  </section>
+
+  <section class="fade-up" style="transition-delay:0.12s">
+    <div class="sec-hdr">analysis</div>
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-title">Error Distribution <span class="badge">all time</span></div>
+        <div class="ring-outer">
+          <div class="ring-pos">
+            <canvas id="donut-chart" width="140" height="140"></canvas>
+            <div class="ring-inner"><div class="ring-pct" id="donut-pct">0%</div><div class="ring-lbl">AC RATE</div></div>
+          </div>
+          <div class="legend-list" id="donut-legend"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Daily Activity <span class="badge">last 30 days</span></div>
+        <div class="chart-wrap" style="height:205px;"><canvas id="line-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Success by Difficulty</div>
+        <div class="ring-outer">
+          <div class="ring-pos">
+            <canvas id="ring-chart" width="140" height="140"></canvas>
+            <div class="ring-inner"><div class="ring-pct" id="ring-pct">0%</div><div class="ring-lbl">SOLVED</div></div>
+          </div>
+          <div class="success-grid" id="diff-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fade-up" style="transition-delay:0.20s">
+    <div class="sec-hdr">deep dive</div>
+    <div class="bottom-row">
+      <div class="left-col">
+        <div class="card">
+          <div class="card-title">Trouble Questions <span class="badge">most errors</span></div>
+          <div id="trouble-table"><div class="empty"><div class="empty-icon">⚡</div>No data yet.</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Topic Distribution</div>
+          <div class="topic-wrap" id="topic-cloud"><div class="empty" style="width:100%"><div class="empty-icon">🏷</div>No topics tracked yet.</div></div>
+        </div>
+      </div>
+      <div class="right-col">
+        <div class="card">
+          <div class="card-title">Commit Heatmap <span class="badge">last 112 days</span></div>
+          <div class="heatmap-wrap">
+            <div class="hmap-grid" id="hmap"></div>
+            <div class="hmap-legend">less <div class="hcell h0"></div><div class="hcell h1"></div><div class="hcell h2"></div><div class="hcell h3"></div><div class="hcell h4"></div> more</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Language Breakdown</div>
+          <div class="lang-rows" id="lang-rows"><div class="empty"><div class="empty-icon">{ }</div>No runs yet.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>

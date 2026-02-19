@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
 // ======================================================
 
 const DB_NAME = "CodeTrackerDB";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise = null;
 
@@ -77,7 +77,9 @@ function openDB() {
 
         qs.createIndex("platform", "platform");
         qs.createIndex("lastTriedAt", "lastTriedAt");
+        qs.createIndex("solvedAt", "solvedAt");
       }
+
 
       if (!db.objectStoreNames.contains("daily_stats")) {
         db.createObjectStore("daily_stats", {
@@ -240,6 +242,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .then(() => sendResponse({ success: true }))
       .catch(err => sendResponse({ success: false, error: err.message }));
 
+    return true;
+  }
+
+  // Dashboard requests all data in one shot
+  if (message.type === "GET_DASHBOARD_DATA") {
+    Promise.all([
+      getAllFromStore("runs"),
+      getAllFromStore("question_stats"),
+      getAllFromStore("daily_stats")
+    ])
+      .then(([runs, questionStats, dailyStats]) =>
+        sendResponse({ success: true, runs, questionStats, dailyStats })
+      )
+      .catch(err => sendResponse({ success: false, error: err.message }));
     return true;
   }
 });

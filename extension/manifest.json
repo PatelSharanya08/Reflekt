@@ -1,22 +1,28 @@
 {
-    "name":"reflekt",
-    "description":"From tracking errors to eliminating them-reflekt on mistakes and correct them",
-    "version":"1.0",
-    "manifest_version":3,
-    "action":{
-        "default_popup":"popup.html",
-        "default_icon":"popup_icon.png"
+    "name": "reflekt",
+    "description": "From tracking errors to eliminating them — reflekt on mistakes and correct them",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "popup_icon.png"
     },
-    "permissions":["scripting"],
-    "host_permissions":["https://leetcode.com/*"],
-    "content_scripts":[
+    "permissions": ["scripting", "storage","tabs"],
+    "host_permissions": ["https://leetcode.com/*"],
+    "content_scripts": [
         {
-            "matches":["https://leetcode.com/problems/*"],
-            "js":["content/content.js"],
-            "run_at":"document_idle"
+            "matches": ["https://leetcode.com/problems/*"],
+            "js": ["content/content.js"],
+            "run_at": "document_idle"
         }
     ],
-    "background":{
-        "service_worker":"background/background.js"
-    }
+    "background": {
+        "service_worker": "background/background.js"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": ["dashboard.html"],
+            "matches": ["<all_urls>"]
+        }
+    ]
 }

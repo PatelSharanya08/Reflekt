@@ -1,0 +1,67 @@
+:root {
+    --bg: #080c09;
+    --green: #00ff41;
+    --green2: #008822;
+    --green3: #003311;
+    --muted: #3a5c3e;
+    --border: #1a2b1d;
+    --white: #d4f0d8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--white);
+    width: 260px;
+    padding: 20px;
+}
+.header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px;
+}
+.bracket {
+    font-size: 20px; font-weight: 700; color: var(--green);
+    text-shadow: 0 0 8px rgba(0,255,65,0.5);
+    letter-spacing: -2px;
+}
+.title { font-size: 14px; font-weight: 700; color: var(--green); letter-spacing: 0.06em; }
+.title span { color: var(--muted); font-weight: 400; }
+
+.status-row {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 10px; color: var(--muted);
+    padding: 8px 10px;
+    background: #0b100c; border: 1px solid var(--border);
+    border-radius: 3px;
+    margin-bottom: 14px;
+}
+.dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 5px var(--green);
+    animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 50% { opacity:0.2; } }
+
+.btn {
+    width: 100%;
+    padding: 11px;
+    background: var(--green3);
+    border: 1px solid var(--green2);
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.12em;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+    text-transform: uppercase;
+}
+.btn:hover {
+    background: #004d1a;
+    box-shadow: 0 0 14px rgba(0,255,65,0.15);
+}
+.footer {
+    margin-top: 14px; text-align: center;
+    font-size: 9px; color: #1e3320; letter-spacing: 0.1em;
+}
