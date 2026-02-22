@@ -44,6 +44,8 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
 // INDEXEDDB CONFIG
 // ======================================================
 
+// indexedDB.deleteDatabase("CodeTrackerDB");
+
 const DB_NAME = "CodeTrackerDB";
 const DB_VERSION = 2;
 
@@ -118,22 +120,35 @@ async function addRunEvent(data) {
   const db = await openDB();
 
   return new Promise((resolve, reject) => {
-    const tx = db.transaction("runs", "readwrite");
-    const store = tx.objectStore("runs");
+    const tx = db.transaction(["runs", "question_stats"], "readwrite");
+    const runsStore = tx.objectStore("runs");
+    const qsStore = tx.objectStore("question_stats");
 
-    store.add({
-      questionId: data.questionId,
-      platform: data.platform,
-      action: data.action || "run",
-      status: data.status,
-      language: data.language || "unknown",
-      timestamp: Date.now()
-    });
+    const getReq = qsStore.get(data.questionId);
+
+    getReq.onsuccess = () => {
+      const record = getReq.result;
+      const attemptNumber = record ? record.totalAttempts + 1 : 1;
+
+      runsStore.add({
+        questionId: data.questionId,
+        platform: data.platform,
+        title: data.title || "",
+        difficulty: data.difficulty || "unknown",
+        topics: data.topics || [],
+        action: data.action || "run",
+        status: data.status,
+        language: data.lang || "unknown",
+        attemptNumber,
+        timestamp: Date.now()
+      });
+    };
 
     tx.oncomplete = () => resolve(true);
     tx.onerror = () => reject(tx.error);
   });
 }
+
 
 // ======================================================
 // UPDATE QUESTION STATS
@@ -149,29 +164,53 @@ async function updateQuestionStats(data) {
     const getReq = store.get(data.questionId);
 
     getReq.onsuccess = () => {
-      let record = getReq.result || {
-        questionId: data.questionId,
-        platform: data.platform,
-        totalRuns: 0,
-        totalSubmits: 0,
-        acCount: 0,
-        tleCount: 0,
-        reCount: 0,
-        ceCount: 0,
-        lastStatus: null,
-        lastTriedAt: null
-      };
+      const now = Date.now();
+      let record = getReq.result;
+
+      // FIRST TIME seeing this question
+      if (!record) {
+        record = {
+          questionId: data.questionId,
+          platform: data.platform,
+          title: data.title || "",
+          difficulty: data.difficulty || "unknown",
+          topics: data.topics || [],
+          totalAttempts: 0,
+          totalRuns: 0,
+          totalSubmits: 0,
+          acCount: 0,
+          tleCount: 0,
+          reCount: 0,
+          ceCount: 0,
+          firstAttemptAt: now,
+          solvedAt: null,
+          timeToSolve: null,
+          lastStatus: null,
+          lastTriedAt: null
+        };
+      }
+
+      // Increment attempt count
+      record.totalAttempts++;
 
       if (data.action === "submit") record.totalSubmits++;
       else record.totalRuns++;
 
+      // Error counters
       if (data.status === "AC") record.acCount++;
       if (data.status === "TLE") record.tleCount++;
       if (data.status === "RE") record.reCount++;
       if (data.status === "CE") record.ceCount++;
 
+      // FIRST AC logic
+      if (data.status === "AC" && !record.solvedAt) {
+        record.solvedAt = now;
+        record.timeToSolve = now - record.firstAttemptAt;
+        record.attemptsBeforeFirstAC = record.totalAttempts;
+      }
+
       record.lastStatus = data.status;
-      record.lastTriedAt = Date.now();
+      record.lastTriedAt = now;
 
       store.put(record);
     };

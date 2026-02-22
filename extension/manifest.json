@@ -7,7 +7,7 @@
         "default_popup": "popup.html",
         "default_icon": "popup_icon.png"
     },
-    "permissions": ["scripting", "storage","tabs"],
+    "permissions": ["scripting", "storage", "tabs"],
     "host_permissions": ["https://leetcode.com/*"],
     "content_scripts": [
         {
@@ -19,9 +19,12 @@
     "background": {
         "service_worker": "background/background.js"
     },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
+    },
     "web_accessible_resources": [
         {
-            "resources": ["dashboard.html"],
+            "resources": ["dashboard.html", "analytics.html"],
             "matches": ["<all_urls>"]
         }
     ]

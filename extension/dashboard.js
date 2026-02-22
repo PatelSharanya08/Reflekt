@@ -1,3 +1,12 @@
+window.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('open-analytics-btn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      window.open('analytics.html', '_blank');
+    });
+  }
+});
+
 // ═══════════════════════════════════════════════════════
 //  BOOT ANIMATION
 // ═══════════════════════════════════════════════════════
